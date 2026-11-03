@@ -1,0 +1,596 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hillmen Kapasiti</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+--floor:#161a21; /* lantai kedai */
+--panel:#1d222b;
+--panel-2:#232935;
+--edge:#2e3542;
+--text:#edeff2;
+--dim:#9aa3b1;
+--faint:#6b7483;
+--brass:#c8a15a;
+--brass-soft:rgba(200,161,90,.14);
+--oxblood:#c25555;
+--oxblood-soft:rgba(194,85,85,.15);
+--sage:#6fa58a;
+--sage-soft:rgba(111,165,138,.15);
+--chrome:#a7afbc;
+color-scheme:dark;
+--r-lg:18px; --r-md:12px; --r-sm:8px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--floor);color:var(--text);font-family:"Archivo",system-ui,sans-serif;font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-block:0 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* ---------- top bar ---------- */
+.pole{height:6px;background:repeating-linear-gradient(135deg,var(--oxblood) 0 14px,var(--text) 14px 28px,#3a5a8c 28px 42px,var(--text) 42px 56px)}
+.top{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:22px 0 8px}
+.brand{display:flex;align-items:baseline;gap:14px}
+.brand .word{font-stretch:125%;font-weight:800;font-size:30px;letter-spacing:-.02em;line-height:1}
+.brand .sub{color:var(--dim);font-size:14px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.month{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r-sm);padding:8px 10px;color-scheme:dark}
+.btn{border:1px solid var(--edge);background:var(--panel);border-radius:var(--r-sm);padding:9px 14px;cursor:pointer;font-weight:600;font-size:14px;transition:border-color .15s,background .15s}
+.btn:hover{border-color:var(--chrome)}
+.btn.gold{background:var(--brass);border-color:var(--brass);color:#1b1a16}
+.btn.gold:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+
+/* ---------- hero ---------- */
+.hero{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:20px;margin-top:18px}
+@media(max-width:880px){.hero{grid-template-columns:1fr}}
+.gauge{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r-lg);padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.gauge svg{width:220px;height:220px;max-width:100%}
+.gauge .big{font-stretch:115%;font-weight:800;font-size:46px;letter-spacing:-.03em;fill:var(--text)}
+.gauge .lab{fill:var(--dim);font-size:13px}
+.gauge p{margin:10px 0 0;color:var(--dim);font-size:14px;max-width:30ch}
+.gauge p b{color:var(--text)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge);border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:560px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel);padding:22px 22px 20px}
+.stat .k{color:var(--dim);font-size:13px}
+.stat .v{font-stretch:112%;font-weight:800;font-size:38px;letter-spacing:-.025em;line-height:1.1;margin-top:6px}
+.stat .v small{font-size:16px;font-weight:600;color:var(--dim);letter-spacing:0;margin-left:4px}
+.stat .d{margin-top:6px;font-size:13px;color:var(--dim)}
+.stat .d em{font-style:normal;color:var(--brass);font-weight:600}
+
+/* ---------- section heads ---------- */
+.sec{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px;margin:44px 0 14px}
+.sec h2{margin:0;font-stretch:118%;font-weight:800;font-size:22px;letter-spacing:-.015em}
+.sec p{margin:2px 0 0;color:var(--dim);font-size:14px;max-width:70ch}
+
+/* ---------- shop floor (chair map) ---------- */
+.floor{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r-lg);overflow:hidden}
+.lane{display:grid;grid-template-columns:200px 1fr 260px;gap:20px;align-items:center;padding:20px 22px;border-top:1px solid var(--edge)}
+.lane:first-child{border-top:none}
+@media(max-width:980px){.lane{grid-template-columns:1fr;gap:14px}}
+.lane h3{margin:0;font-stretch:112%;font-weight:700;font-size:19px}
+.pill{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:99px}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.p-full{color:var(--oxblood);background:var(--oxblood-soft)}
+.p-ok{color:var(--sage);background:var(--sage-soft)}
+.p-low{color:var(--brass);background:var(--brass-soft)}
+.chairs{display:flex;flex-wrap:wrap;gap:10px}
+.chair{width:44px;height:54px}
+.chair svg{width:100%;height:100%;display:block}
+.lane .nums{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.lane .nums div{font-size:12.5px;color:var(--dim)}
+.lane .nums b{display:block;font-size:20px;font-weight:700;color:var(--text);font-stretch:108%}
+.legend{display:flex;flex-wrap:wrap;gap:18px;padding:14px 22px;border-top:1px solid var(--edge);background:var(--panel-2);font-size:13px;color:var(--dim)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block}
+
+/* ---------- two-col ---------- */
+.duo{display:grid;grid-template-columns:1.35fr 1fr;gap:20px}
+@media(max-width:980px){.duo{grid-template-columns:1fr}}
+.box{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r-lg);padding:20px}
+.box h4{margin:0 0 4px;font-size:16px;font-weight:700}
+.box .hint{color:var(--dim);font-size:13px;margin:0 0 12px}
+.chartbox{position:relative;height:330px}
+.keys{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--dim);margin-bottom:8px}
+.keys span{display:inline-flex;gap:7px;align-items:center}
+.keys i{width:12px;height:12px;border-radius:3px}
+
+/* ---------- ranking ---------- */
+.rank{list-style:none;margin:0;padding:0}
+.rank li{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--edge)}
+.rank li:first-child{border-top:none}
+.rank .pos{font-stretch:120%;font-weight:800;color:var(--faint);font-size:18px}
+.rank .nm{font-weight:600}
+.rank .track{height:6px;background:var(--panel-2);border-radius:99px;margin-top:6px;overflow:hidden}
+.rank .track i{display:block;height:100%;border-radius:99px}
+.rank .val{text-align:right;font-weight:700;font-size:18px}
+.rank .val small{display:block;font-size:12px;color:var(--dim);font-weight:500}
+
+/* ---------- actions list ---------- */
+.moves{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.move{background:var(--panel);border:1px solid var(--edge);border-left:4px solid var(--c,var(--brass));border-radius:var(--r-md);padding:16px 18px}
+.move b{display:block;font-size:15px;margin-bottom:4px}
+.move span{color:var(--dim);font-size:14px}
+
+/* ---------- simulator ---------- */
+.simtop{display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--dim);margin-bottom:5px}
+.field input[type=number]{width:140px;background:var(--panel-2);border:1px solid var(--edge);border-radius:var(--r-sm);padding:9px 11px}
+.field input[type=range]{width:220px;accent-color:var(--brass)}
+.field output{font-weight:700;margin-left:8px}
+.simgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.simcard{background:var(--panel-2);border:1px solid var(--edge);border-radius:var(--r-md);padding:16px}
+.simcard h5{margin:0 0 10px;font-size:16px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.step{display:flex;align-items:center;gap:8px}
+.step button{width:34px;height:34px;border-radius:var(--r-sm);border:1px solid var(--edge);background:var(--panel);cursor:pointer;font-size:18px;font-weight:700;line-height:1}
+.step button:hover{border-color:var(--brass)}
+.step .s{min-width:72px;text-align:center;font-weight:700}
+.simrow{display:flex;justify-content:space-between;font-size:13.5px;padding:5px 0;color:var(--dim)}
+.simrow b{color:var(--text);font-weight:700}
+.simrow b.up{color:var(--sage)} .simrow b.warn{color:var(--oxblood)}
+.simtotal{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--edge);border:1px solid var(--edge);border-radius:var(--r-md);overflow:hidden}
+.simtotal div{background:var(--panel);padding:16px}
+.simtotal span{display:block;font-size:13px;color:var(--dim)}
+.simtotal b{display:block;font-size:24px;font-weight:800;font-stretch:110%;margin-top:4px}
+
+/* ---------- tables / inputs ---------- */
+.tbl{width:100%;border-collapse:collapse;min-width:620px}
+.tblwrap{overflow-x:auto}
+.tbl th{text-align:left;font-size:13px;font-weight:600;color:var(--dim);padding:10px 8px;border-bottom:1px solid var(--edge)}
+.tbl td{padding:8px;border-bottom:1px solid var(--edge)}
+.tbl input{width:100%;background:var(--panel-2);border:1px solid var(--edge);border-radius:var(--r-sm);padding:9px 11px}
+.tbl td.n input{text-align:right}
+.del{background:none;border:none;color:var(--faint);cursor:pointer;font-size:20px;padding:4px 10px;border-radius:6px}
+.del:hover{color:var(--oxblood);background:var(--oxblood-soft)}
+.row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:20px;padding-top:20px;border-top:1px solid var(--edge)}
+.settings label{display:block;font-size:13px;color:var(--dim);margin-bottom:5px}
+.settings input{width:100%;background:var(--panel-2);border:1px solid var(--edge);border-radius:var(--r-sm);padding:9px 11px}
+.settings input:disabled{opacity:.7}
+.empty{color:var(--dim);padding:18px 0;font-size:14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--floor);font-weight:600;padding:11px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{
+body{background:#fff;color:#111}
+.tools,.no-print,.pole{display:none!important}
+.box,.floor,.stat,.gauge,.move,.simcard{background:#fff!important;border-color:#ccc!important;color:#111}
+}
+</style>
+<div class="pole" aria-hidden="true"></div>
+<div class="wrap">
+
+<div class="top">
+<div class="brand">
+<div class="word">Hillmen</div>
+<div class="sub">Kapasiti &amp; penggunaan cawangan</div>
+</div>
+<div class="tools">
+<input type="month" class="month" id="bulan" aria-label="Bulan">
+<button class="btn gold" id="snapBtn">Simpan bulan ini</button>
+</div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+<div class="gauge">
+<svg viewBox="0 0 220 220" role="img" aria-labelledby="gTitle">
+<title id="gTitle">Peratus guna kapasiti staff keseluruhan</title>
+<circle cx="110" cy="110" r="92" fill="none" stroke="var(--panel-2)" stroke-width="16"/>
+<circle id="gArc" cx="110" cy="110" r="92" fill="none" stroke="var(--brass)" stroke-width="16" stroke-linecap="round"
+transform="rotate(-90 110 110)" stroke-dasharray="578" stroke-dashoffset="578" style="transition:stroke-dashoffset 1s cubic-bezier(.2,.7,.2,1),stroke .3s"/>
+<line id="gMark" x1="110" y1="10" x2="110" y2="30" stroke="var(--chrome)" stroke-width="2" transform="rotate(0 110 110)"/>
+<text id="gVal" x="110" y="114" text-anchor="middle" class="big">0%</text>
+<text x="110" y="140" text-anchor="middle" class="lab">guna kapasiti staff</text>
+</svg>
+<p id="gNote"></p>
+</div>
+<div class="stats" id="stats"></div>
+</section>
+
+<!-- SHOP FLOOR -->
+<div class="sec">
+<div>
+<h2>Lantai kedai</h2>
+<p>Setiap ikon ialah satu kerusi. Kerusi berstaff diisi mengikut peratus slot yang terjual; kerusi bergaris putus belum ada staff.</p>
+</div>
+</div>
+<div class="floor" id="floor"></div>
+
+<!-- CHART + RANK -->
+<div class="sec"><div><h2>Permintaan berbanding kapasiti</h2></div></div>
+<div class="duo">
+<div class="box">
+<div class="keys">
+<span><i style="background:var(--text)"></i>Pelanggan sebenar</span>
+<span><i style="background:var(--brass)"></i>Kapasiti staff</span>
+<span><i style="background:var(--edge)"></i>Kapasiti kerusi</span>
+</div>
+<div class="chartbox"><canvas id="barChart" aria-label="Graf pelanggan berbanding kapasiti"></canvas></div>
+</div>
+<div class="box">
+<h4>Kedudukan produktiviti</h4>
+<p class="hint">Pelanggan seorang staff sehari, berbanding maksimum <span id="maxSlot"></span>.</p>
+<ol class="rank" id="rank"></ol>
+</div>
+</div>
+
+<!-- MOVES -->
+<div class="sec"><div><h2>Langkah seterusnya</h2><p>Dijana automatik daripada angka semasa.</p></div></div>
+<div class="moves" id="moves"></div>
+
+<!-- SIMULATOR -->
+<div class="sec no-print">
+<div>
+<h2>Simulasi: kalau tambah staff</h2>
+<p>Ubah bilangan staff setiap cawangan untuk lihat kapasiti baru dan berapa pelanggan diperlukan untuk capai sasaran. Data sebenar tidak berubah.</p>
+</div>
+<button class="btn" id="simReset">Set semula simulasi</button>
+</div>
+<div class="box no-print">
+<div class="simtop">
+<div class="field">
+<label for="target">Sasaran guna kapasiti</label>
+<input type="range" id="target" min="50" max="100" step="5"><output id="targetOut"></output>
+</div>
+<div class="field">
+<label for="harga">Harga purata sepelanggan (RM)</label>
+<input type="number" id="harga" min="0" step="1" placeholder="cth. 25">
+</div>
+</div>
+<div class="simgrid" id="simGrid"></div>
+<div class="simtotal" id="simTotal"></div>
+</div>
+
+<!-- HISTORY -->
+<div class="sec">
+<div>
+<h2>Trend bulanan</h2>
+<p>Tekan "Simpan bulan ini" setiap hujung bulan. Peratus guna kapasiti staff setiap cawangan akan dijejak di sini.</p>
+</div>
+</div>
+<div class="box">
+<div class="chartbox" id="histWrap"><canvas id="histChart" aria-label="Trend peratus guna kapasiti"></canvas></div>
+<div class="tblwrap" style="margin-top:14px"><table class="tbl" id="histTbl"></table></div>
+</div>
+
+<!-- DATA ENTRY -->
+<div class="sec no-print">
+<div><h2>Kemas kini data</h2><p>Semua angka di atas dikira semula sebaik sahaja anda menaip.</p></div>
+</div>
+<div class="box no-print">
+<div class="tblwrap">
+<table class="tbl">
+<thead><tr><th style="width:32%">Cawangan</th><th>Staff</th><th>Kerusi</th><th>Pelanggan sebulan</th><th></th></tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+<div class="row-actions">
+<button class="btn" id="addBtn">Tambah cawangan</button>
+<button class="btn ghost" id="resetBtn">Pulihkan data Oktober 2026</button>
+</div>
+<div class="settings">
+<div><label for="jam">Jam kerja sehari</label><input type="number" id="jam" step="0.5" min="0"></div>
+<div><label for="slot">Durasi satu slot (minit)</label><input type="number" id="slot" step="5" min="1"></div>
+<div><label for="hari">Hari buka sebulan</label><input type="number" id="hari" min="1" max="31"></div>
+<div><label for="slotHari">Slot seorang staff sehari</label><input type="text" id="slotHari" disabled></div>
+</div>
+</div>
+
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const confirm = () => true; /* dialog confirm tidak tersedia dalam paparan artifact */
+/* ================= STATE ================= */
+const DEFAULT = {
+bulan: "2026-10", jam: 7.5, slot: 45, hari: 26, harga: "", target: 80,
+cawangan: [
+{ nama: "Jasin", staff: 5, kerusi: 8, pelanggan: 523 },
+{ nama: "Air Keroh", staff: 6, kerusi: 8, pelanggan: 857 },
+{ nama: "Sungai Udang", staff: 4, kerusi: 6, pelanggan: 939 },
+{ nama: "Masjid Tanah", staff: 3, kerusi: 5, pelanggan: 777 }
+],
+sejarah: []
+};
+const KEY = "hillmen-kapasiti-pro-v1";
+const clone = o => JSON.parse(JSON.stringify(o));
+let state;
+try { state = Object.assign(clone(DEFAULT), JSON.parse(localStorage.getItem(KEY)) || {}); }
+catch (e) { state = clone(DEFAULT); }
+let sim = state.cawangan.map(c => c.staff);
+
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+const n = v => (v === "" || v === null || !isFinite(+v)) ? 0 : +v;
+const fmt = v => Math.round(v).toLocaleString("en-MY");
+const pct = v => (v * 100).toFixed(1) + "%";
+const rm = v => "RM " + Math.round(v).toLocaleString("en-MY");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const cssv = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const $ = id => document.getElementById(id);
+
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2200); }
+
+function status(p){
+if (p >= 0.9) return { t: "Penuh", long: "Penuh, perlu tambah staff", cls: "p-full", col: "--oxblood" };
+if (p >= 0.7) return { t: "Sihat", long: "Sihat", cls: "p-ok", col: "--sage" };
+return { t: "Kurang pelanggan", long: "Kurang pelanggan, fokus marketing", cls: "p-low", col: "--brass" };
+}
+
+/* ================= CALC ================= */
+function slotPerDay(s = state){ return n(s.slot) > 0 ? n(s.jam) * 60 / n(s.slot) : 0; }
+function calcRows(list, s = state){
+const sd = slotPerDay(s), hari = n(s.hari);
+return list.map(c => {
+const kapStaff = n(c.staff) * sd * hari, kapKerusi = n(c.kerusi) * sd * hari, p = n(c.pelanggan);
+return { ...c, kapStaff, kapKerusi,
+gunaStaff: kapStaff ? p / kapStaff : 0,
+gunaKerusi: kapKerusi ? p / kapKerusi : 0,
+terbiar: Math.max(kapStaff - p, 0),
+kosong: Math.max(n(c.kerusi) - n(c.staff), 0),
+perStaffHari: n(c.staff) && hari ? p / n(c.staff) / hari : 0 };
+});
+}
+function totals(rows){
+const sum = k => rows.reduce((a, r) => a + n(r[k]), 0);
+const t = { staff: sum("staff"), kerusi: sum("kerusi"), pelanggan: sum("pelanggan"), kapStaff: sum("kapStaff"), kapKerusi: sum("kapKerusi"), terbiar: sum("terbiar"), kosong: sum("kosong") };
+t.gunaStaff = t.kapStaff ? t.pelanggan / t.kapStaff : 0;
+t.gunaKerusi = t.kapKerusi ? t.pelanggan / t.kapKerusi : 0;
+return t;
+}
+
+/* ================= RENDER: HERO ================= */
+function renderHero(rows, t){
+const hari = n(state.hari), harga = n(state.harga), st = status(t.gunaStaff);
+const C = 2 * Math.PI * 92;
+const arc = $("gArc");
+arc.setAttribute("stroke-dasharray", C);
+arc.setAttribute("stroke-dashoffset", C * (1 - Math.min(t.gunaStaff, 1)));
+arc.setAttribute("stroke", `var(${st.col})`);
+$("gMark").setAttribute("transform", `rotate(${n(state.target) * 3.6} 110 110)`);
+$("gVal").textContent = (t.gunaStaff * 100).toFixed(1) + "%";
+$("gNote").innerHTML = `<b>${fmt(t.pelanggan)}</b> daripada <b>${fmt(t.kapStaff)}</b> slot staff terjual bulan ini. Garis kecil menandakan sasaran ${n(state.target)}%.`;
+
+const stats = [
+{ k: "Pelanggan sebulan", v: fmt(t.pelanggan), d: `Purata ${fmt(hari ? t.pelanggan / hari : 0)} sehari di ${rows.length} cawangan` },
+{ k: "Kapasiti staff", v: fmt(t.kapStaff), u: "slot", d: `${t.staff} staff, maksimum ${fmt(hari ? t.kapStaff / hari : 0)} pelanggan sehari` },
+{ k: "Slot staff terbiar", v: fmt(t.terbiar), u: "slot",
+d: harga ? `Nilai tidak terjual <em>${rm(t.terbiar * harga)}</em> sebulan` : "Isi harga purata dalam simulasi untuk lihat nilai RM" },
+{ k: "Ruang untuk berkembang", v: t.kosong, u: "kerusi kosong",
+d: `Kapasiti penuh kerusi ${fmt(t.kapKerusi)} slot, guna ${pct(t.gunaKerusi)}` }
+];
+$("stats").innerHTML = stats.map(s => `<div class="stat"><div class="k">${s.k}</div><div class="v">${s.v}${s.u ? `<small>${s.u}</small>` : ""}</div><div class="d">${s.d}</div></div>`).join("");
+}
+
+/* ================= RENDER: FLOOR ================= */
+function chairSVG(id, fill, staffed, col){
+const shape = `<path d="M13 4h18a3 3 0 0 1 3 3v17H10V7a3 3 0 0 1 3-3z"/><rect x="5" y="24" width="34" height="9" rx="3"/><rect x="20" y="33" width="4" height="10"/><rect x="11" y="43" width="22" height="5" rx="2.5"/>`;
+if (!staffed) return `<svg viewBox="0 0 44 52" aria-hidden="true"><g fill="none" stroke="var(--faint)" stroke-width="1.6" stroke-dasharray="3 3">${shape}</g></svg>`;
+const f = Math.max(0, Math.min(fill, 1));
+return `<svg viewBox="0 0 44 52" aria-hidden="true">
+<defs><linearGradient id="${id}" x1="0" y1="1" x2="0" y2="0">
+<stop offset="${f}" stop-color="var(${col})"/><stop offset="${f}" stop-color="var(--panel-2)"/>
+</linearGradient></defs>
+<g fill="url(#${id})" stroke="var(--chrome)" stroke-width="1.2">${shape}</g></svg>`;
+}
+function renderFloor(rows){
+const sd = slotPerDay();
+const lanes = rows.map((r, i) => {
+const st = status(r.gunaStaff);
+let chairs = "";
+const total = Math.max(n(r.kerusi), n(r.staff));
+for (let c = 0; c < total; c++){
+const staffed = c < n(r.staff);
+chairs += `<div class="chair" title="${staffed ? "Kerusi berstaff" : "Kerusi tanpa staff"}">${chairSVG(`g${i}_${c}`, r.gunaStaff, staffed, st.col)}</div>`;
+}
+return `<div class="lane">
+<div><h3>${esc(r.nama || "Tanpa nama")}</h3><span class="pill ${st.cls}">${st.long}</span></div>
+<div class="chairs" aria-label="${n(r.staff)} kerusi berstaff daripada ${n(r.kerusi)}">${chairs || '<span class="empty">Tiada kerusi</span>'}</div>
+<div class="nums">
+<div>Guna staff<b style="color:var(${st.col})">${pct(r.gunaStaff)}</b></div>
+<div>Guna kerusi<b>${pct(r.gunaKerusi)}</b></div>
+<div>Pelanggan / kapasiti<b>${fmt(r.pelanggan)} / ${fmt(r.kapStaff)}</b></div>
+<div>Seorang staff sehari<b>${r.perStaffHari.toFixed(1)} <span style="font-size:13px;color:var(--dim);font-weight:500">/ ${sd.toFixed(0)}</span></b></div>
+</div></div>`;
+}).join("");
+$("floor").innerHTML = (lanes || '<div class="lane"><span class="empty">Tambah cawangan di bahagian Kemas kini data.</span></div>') +
+`<div class="legend"><span><i style="background:var(--oxblood)"></i>Penuh, 90% ke atas</span><span><i style="background:var(--sage)"></i>Sihat, 70 hingga 89%</span><span><i style="background:var(--brass)"></i>Kurang pelanggan, bawah 70%</span><span><i style="border:1.5px dashed var(--faint)"></i>Kerusi tanpa staff</span></div>`;
+}
+
+/* ================= RENDER: CHART + RANK ================= */
+let barChart, histChart;
+if (typeof Chart !== "undefined") Chart.defaults.font.family = "Archivo, system-ui, sans-serif";
+function renderBar(rows){
+if (typeof Chart === "undefined") return;
+const data = { labels: rows.map(r => r.nama), datasets: [
+{ label: "Pelanggan sebenar", data: rows.map(r => n(r.pelanggan)), backgroundColor: cssv("--text"), borderRadius: 6, barPercentage: .8, categoryPercentage: .7 },
+{ label: "Kapasiti staff", data: rows.map(r => Math.round(r.kapStaff)), backgroundColor: cssv("--brass"), borderRadius: 6, barPercentage: .8, categoryPercentage: .7 },
+{ label: "Kapasiti kerusi", data: rows.map(r => Math.round(r.kapKerusi)), backgroundColor: cssv("--edge"), borderRadius: 6, barPercentage: .8, categoryPercentage: .7 }
+]};
+if (barChart){ barChart.data = data; barChart.update(); return; }
+barChart = new Chart($("barChart"), { type: "bar", data, options: {
+responsive: true, maintainAspectRatio: false,
+plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${fmt(c.raw)}` } } },
+scales: { x: { grid: { display: false }, ticks: { color: cssv("--dim") } },
+y: { beginAtZero: true, grid: { color: cssv("--edge") }, border: { display: false }, ticks: { color: cssv("--dim"), callback: v => fmt(v) } } } } });
+}
+function renderRank(rows){
+const sd = slotPerDay();
+$("maxSlot").textContent = sd.toFixed(0);
+const sorted = [...rows].sort((a, b) => b.perStaffHari - a.perStaffHari);
+$("rank").innerHTML = sorted.map((r, i) => {
+const st = status(r.gunaStaff);
+return `<li><span class="pos">${i + 1}</span>
+<div><div class="nm">${esc(r.nama)}</div><div class="track"><i style="width:${Math.min(sd ? r.perStaffHari / sd : 0, 1) * 100}%;background:var(${st.col})"></i></div></div>
+<div class="val">${r.perStaffHari.toFixed(1)}<small>${fmt(n(r.staff) ? n(r.pelanggan) / n(r.staff) : 0)} sebulan</small></div></li>`;
+}).join("") || '<li class="empty">Tiada data.</li>';
+}
+
+/* ================= RENDER: MOVES ================= */
+function renderMoves(rows, t){
+const tgt = n(state.target) / 100, harga = n(state.harga), sd = slotPerDay(), hari = n(state.hari);
+const out = [];
+rows.filter(r => r.gunaStaff >= 0.9).sort((a, b) => b.gunaStaff - a.gunaStaff).forEach(r => {
+const tambah = sd * hari;
+out.push({ c: "--oxblood", h: `Tambah staff di ${r.nama}`,
+s: r.kosong > 0
+? `Sudah ${pct(r.gunaStaff)} penuh dengan ${r.kosong} kerusi kosong. Seorang staff tambahan membuka ${fmt(tambah)} slot sebulan${harga ? `, potensi ${rm(tambah * harga)}` : ""}.`
+: `Sudah ${pct(r.gunaStaff)} penuh dan semua kerusi berstaff. Pertimbang tambah kerusi atau panjangkan waktu operasi.` });
+});
+rows.filter(r => r.gunaStaff < 0.7).sort((a, b) => a.gunaStaff - b.gunaStaff).forEach(r => {
+const perlu = Math.max(r.kapStaff * tgt - n(r.pelanggan), 0);
+out.push({ c: "--brass", h: `Tarik pelanggan ke ${r.nama}`,
+s: `Hanya ${pct(r.gunaStaff)} terguna. Perlu ${fmt(perlu)} pelanggan lagi sebulan (kira-kira ${fmt(hari ? perlu / hari : 0)} sehari) untuk capai ${n(state.target)}%${harga ? `, bernilai ${rm(perlu * harga)}` : ""}.` });
+});
+const penuh = rows.filter(r => r.gunaStaff >= 0.9), rendah = rows.filter(r => r.gunaStaff < 0.7 && n(r.staff) > 1);
+if (penuh.length && rendah.length)
+out.push({ c: "--chrome", h: "Pindah staff pada hari sibuk",
+s: `${rendah.map(r => r.nama).join(" dan ")} ada slot terbiar, manakala ${penuh.map(r => r.nama).join(" dan ")} sudah penuh. Giliran sementara boleh isi slot tanpa menambah kos gaji.` });
+if (t.kosong) out.push({ c: "--sage", h: `${t.kosong} kerusi menunggu staff`,
+s: `Jika semua kerusi berstaff, kapasiti naik daripada ${fmt(t.kapStaff)} ke ${fmt(t.kapKerusi)} slot sebulan. Utamakan cawangan yang sudah penuh.` });
+$("moves").innerHTML = out.map(m => `<div class="move" style="--c:var(${m.c})"><b>${esc(m.h)}</b><span>${m.s}</span></div>`).join("")
+|| '<div class="move" style="--c:var(--sage)"><b>Semua cawangan dalam zon sihat</b><span>Teruskan pantau setiap bulan.</span></div>';
+}
+
+/* ================= RENDER: SIMULATOR ================= */
+function renderSim(){
+if (sim.length !== state.cawangan.length) sim = state.cawangan.map(c => c.staff);
+const tgt = n(state.target) / 100, harga = n(state.harga), sd = slotPerDay(), hari = n(state.hari);
+$("target").value = state.target; $("targetOut").textContent = state.target + "%";
+$("harga").value = state.harga;
+let addCap = 0, addRev = 0, totNeed = 0, newCap = 0;
+$("simGrid").innerHTML = state.cawangan.map((c, i) => {
+const s = n(sim[i]), cap = s * sd * hari, oldCap = n(c.staff) * sd * hari, p = n(c.pelanggan);
+const guna = cap ? p / cap : 0, need = Math.max(cap * tgt - p, 0), delta = cap - oldCap;
+const over = s > n(c.kerusi);
+addCap += delta; newCap += cap; totNeed += need;
+if (delta > 0) addRev += delta * harga;
+return `<div class="simcard">
+<h5>${esc(c.nama)}<span class="pill ${status(guna).cls}" style="margin:0">${pct(guna)}</span></h5>
+<div class="step">
+<button aria-label="Kurang staff ${esc(c.nama)}" data-sim="${i}" data-d="-1">−</button>
+<span class="s">${s} staff</span>
+<button aria-label="Tambah staff ${esc(c.nama)}" data-sim="${i}" data-d="1">+</button>
+</div>
+<div class="simrow"><span>Kapasiti baru</span><b class="${delta > 0 ? "up" : ""}">${fmt(cap)}${delta ? ` (${delta > 0 ? "+" : ""}${fmt(delta)})` : ""}</b></div>
+<div class="simrow"><span>Pelanggan perlu untuk ${state.target}%</span><b>${fmt(cap * tgt)}</b></div>
+<div class="simrow"><span>Jurang dari sekarang</span><b>${need ? "+" + fmt(need) : "Sudah capai"}</b></div>
+${over ? `<div class="simrow"><span>Kerusi</span><b class="warn">Melebihi ${n(c.kerusi)} kerusi</b></div>` : ""}
+</div>`;
+}).join("");
+$("simTotal").innerHTML = `
+<div><span>Kapasiti keseluruhan baru</span><b>${fmt(newCap)}</b></div>
+<div><span>Slot tambahan sebulan</span><b style="color:var(--sage)">${addCap >= 0 ? "+" : ""}${fmt(addCap)}</b></div>
+<div><span>Pelanggan baru perlu dicari</span><b>${fmt(totNeed)}</b></div>
+<div><span>Potensi hasil slot tambahan</span><b style="color:var(--brass)">${harga ? rm(addRev) : "Isi harga"}</b></div>`;
+}
+
+/* ================= RENDER: HISTORY ================= */
+const PALETTE = ["--brass", "--sage", "--oxblood", "--chrome", "--text"];
+function renderHistory(){
+const hist = [...state.sejarah].sort((a, b) => a.bulan.localeCompare(b.bulan));
+const names = [...new Set(hist.flatMap(h => h.cawangan.map(c => c.nama)))];
+if (!hist.length){
+$("histWrap").style.display = "none";
+$("histTbl").innerHTML = `<tr><td class="empty">Belum ada bulan disimpan. Tekan "Simpan bulan ini" untuk mula menjejak trend.</td></tr>`;
+if (histChart){ histChart.destroy(); histChart = null; }
+return;
+}
+$("histWrap").style.display = "";
+const label = b => { const [y, m] = b.split("-"); return new Date(+y, +m - 1).toLocaleDateString("ms-MY", { month: "short", year: "numeric" }); };
+const series = names.map((nm, i) => ({
+label: nm,
+data: hist.map(h => { const r = calcRows(h.cawangan.filter(c => c.nama === nm), h)[0]; return r ? +(r.gunaStaff * 100).toFixed(1) : null; }),
+borderColor: cssv(PALETTE[i % PALETTE.length]), backgroundColor: cssv(PALETTE[i % PALETTE.length]),
+tension: .3, pointRadius: 4, spanGaps: true
+}));
+if (typeof Chart !== "undefined"){
+if (histChart) histChart.destroy();
+histChart = new Chart($("histChart"), { type: "line", data: { labels: hist.map(h => label(h.bulan)), datasets: series }, options: {
+responsive: true, maintainAspectRatio: false,
+plugins: { legend: { labels: { color: cssv("--dim"), usePointStyle: true, boxWidth: 8 } }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.raw}%` } } },
+scales: { x: { grid: { display: false }, ticks: { color: cssv("--dim") } },
+y: { suggestedMin: 0, suggestedMax: 100, grid: { color: cssv("--edge") }, border: { display: false }, ticks: { color: cssv("--dim"), callback: v => v + "%" } } } } });
+}
+$("histTbl").innerHTML = `<thead><tr><th>Bulan</th>${names.map(nm => `<th>${esc(nm)}</th>`).join("")}<th>Keseluruhan</th><th></th></tr></thead><tbody>` +
+hist.map(h => {
+const rows = calcRows(h.cawangan, h), t = totals(rows);
+return `<tr><td>${label(h.bulan)}</td>${names.map(nm => { const r = rows.find(x => x.nama === nm); return `<td>${r ? `${fmt(r.pelanggan)} <span style="color:var(${status(r.gunaStaff).col})">(${pct(r.gunaStaff)})</span>` : "—"}</td>`; }).join("")}
+<td><b>${fmt(t.pelanggan)}</b> (${pct(t.gunaStaff)})</td><td><button class="del no-print" data-hdel="${esc(h.bulan)}" aria-label="Buang ${label(h.bulan)}">×</button></td></tr>`;
+}).join("") + "</tbody>";
+}
+
+/* ================= RENDER: TABLE ================= */
+function renderTable(){
+$("tbody").innerHTML = state.cawangan.map((c, i) => `<tr>
+<td><input data-i="${i}" data-k="nama" value="${esc(c.nama)}" aria-label="Nama cawangan"></td>
+<td class="n"><input type="number" min="0" data-i="${i}" data-k="staff" value="${c.staff}" aria-label="Staff ${esc(c.nama)}"></td>
+<td class="n"><input type="number" min="0" data-i="${i}" data-k="kerusi" value="${c.kerusi}" aria-label="Kerusi ${esc(c.nama)}"></td>
+<td class="n"><input type="number" min="0" data-i="${i}" data-k="pelanggan" value="${c.pelanggan}" aria-label="Pelanggan ${esc(c.nama)}"></td>
+<td><button class="del" data-del="${i}" aria-label="Buang ${esc(c.nama)}">×</button></td></tr>`).join("");
+}
+
+function render(){
+const rows = calcRows(state.cawangan), t = totals(rows);
+$("slotHari").value = slotPerDay().toFixed(1);
+renderHero(rows, t); renderFloor(rows); renderBar(rows); renderRank(rows); renderMoves(rows, t); renderSim();
+}
+
+/* ================= EVENTS ================= */
+$("tbody").addEventListener("input", e => {
+const { i, k } = e.target.dataset; if (i === undefined) return;
+state.cawangan[i][k] = k === "nama" ? e.target.value : n(e.target.value);
+if (k === "staff") sim[i] = n(e.target.value);
+save(); render();
+});
+$("tbody").addEventListener("click", e => {
+const d = e.target.dataset.del; if (d === undefined) return;
+const nm = state.cawangan[d].nama;
+if (!confirm(`Buang cawangan ${nm}?`)) return;
+state.cawangan.splice(+d, 1); sim.splice(+d, 1); save(); renderTable(); render(); toast(`${nm} dibuang`);
+});
+$("addBtn").onclick = () => { state.cawangan.push({ nama: "Cawangan baru", staff: 0, kerusi: 0, pelanggan: 0 }); sim.push(0); save(); renderTable(); render(); };
+$("resetBtn").onclick = () => {
+if (!confirm("Pulihkan data cawangan dan tetapan kepada Oktober 2026? Trend bulanan yang disimpan kekal.")) return;
+const keep = state.sejarah; state = clone(DEFAULT); state.sejarah = keep; sim = state.cawangan.map(c => c.staff);
+save(); init(); toast("Data dipulihkan");
+};
+["jam", "slot", "hari"].forEach(id => $(id).addEventListener("input", e => { state[id] = n(e.target.value); save(); render(); }));
+$("bulan").addEventListener("input", e => { state.bulan = e.target.value; save(); });
+$("target").addEventListener("input", e => { state.target = n(e.target.value); save(); render(); });
+$("harga").addEventListener("input", e => { state.harga = e.target.value; save(); render(); });
+$("simGrid").addEventListener("click", e => {
+const b = e.target.closest("[data-sim]"); if (!b) return;
+const i = +b.dataset.sim; sim[i] = Math.max(0, n(sim[i]) + n(b.dataset.d)); renderSim();
+});
+$("simReset").onclick = () => { sim = state.cawangan.map(c => c.staff); renderSim(); };
+
+$("snapBtn").onclick = () => {
+if (!state.bulan){ toast("Pilih bulan dahulu"); $("bulan").focus(); return; }
+const snap = { bulan: state.bulan, jam: state.jam, slot: state.slot, hari: state.hari, cawangan: clone(state.cawangan) };
+const i = state.sejarah.findIndex(h => h.bulan === state.bulan);
+if (i >= 0){ if (!confirm("Bulan ini sudah disimpan. Ganti dengan angka terkini?")) return; state.sejarah[i] = snap; }
+else state.sejarah.push(snap);
+save(); renderHistory(); toast("Bulan disimpan ke trend");
+};
+$("histTbl").addEventListener("click", e => {
+const b = e.target.dataset.hdel; if (!b) return;
+if (!confirm("Buang bulan ini daripada trend?")) return;
+state.sejarah = state.sejarah.filter(h => h.bulan !== b); save(); renderHistory();
+});
+
+
+function init(){
+$("jam").value = state.jam; $("slot").value = state.slot; $("hari").value = state.hari; $("bulan").value = state.bulan || "";
+renderTable(); render(); renderHistory();
+}
+init();
+</script>
+
+</body></html>
